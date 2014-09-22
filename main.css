@@ -1,0 +1,15 @@
+.container {
+	background-color: grey;
+	/*height: 100px;*/
+	/*width: 100px;*/
+	overflow: hidden;
+
+}
+
+.inner {
+	float: left;
+	background: pink;
+	height: 100px;
+	width: 100px;
+	border: 1px solid green;
+}

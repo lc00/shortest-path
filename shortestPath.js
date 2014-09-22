@@ -30,6 +30,7 @@ var getMatchedNodeList = function(index, arrNodes, arrLinks){
 // to the longest path
 var getSortedList = function(nodeList, linkList){
 	var list= [];
+	// console.log(linkList)\\
 	for (var i=nodeList.length-1; i>=0; i--){
 		for (var j=0; j<linkList.length; j++){
 			if( linkList[j].indexOf(nodeList[i]) >= 0 ){
@@ -41,43 +42,92 @@ var getSortedList = function(nodeList, linkList){
 	return list;
 }
 
+var getPreviousNode_Link= function(index, nodeArr, linkArr){
+	var temp = finalArr.pop();
+	var splitArr = temp.split('-');
+	if(splitArr[0] === nodeArr[index]){
+		var previousNode = splitArr[1];
+	}
+	else{
+		var previousNode = splitArr[0]
+	}
 
-// get the 2ndNode from the shortest path(starting from point 1) 
-// and getMatchedNodeList(arrLinks, 2ndNode); if no result, go for 
-// the next shortest path from point 1 and getMatchedNodeList(arrLinks, node)
+	var index = nodeArr.indexOf(previousNode)
+	var previousNodeList = getMatchedNodeList(index, nodeArr, linkArr);
 
-// sort links from shortest to longest
+	if (previousNodeList.length !== 0){
+		var previousNodeSortedList = getSortedList(nodeArr, previousNodeList);
 
-// check if the link has the end node; 
-// if yes, done;
-// else, repeat the 3rdNode
+		var currentLink = previousNodeSortedList[0]
+		var currentLinkSplit = currentLink.split('-')
 
+		if (currentLinkSplit[0] === nodeArr[index]){
+			var nextNode = currentLinkSplit[1]
+		}
+		else {
+			var nextNode = currentLinkSplit[0]
+		}	
+		var nextNodeIndex = nodeArr.indexOf(nextNode)
+
+		finalArr.push(currentLink); 
+		linkArr.splice(linkArr.indexOf(currentLink), 1) // remove current Link from linkArr
+		shortestPath(nextNodeIndex, nodeArr, linkArr)
+	}
+
+	else { // if previous node sorted list doesn't have the next index
+		if ( finalArr.length !== 0){
+			getPreviousNode_Link();
+
+		}
+		else {
+			return "no answer"
+		}
+
+	}
+}
 
 var finalArr = [];
-var i=0;
-var nodeNum = 5
 
 var shortestPath = function(index, nodeArr, linkArr){
 
-	var linksToNode = getMatchedNodeList(index, nodeArr, linkArr)
-	var sortedList = getSortedList(nodeArr, linksToNode); // ["A-B", "A-C", "A-D"]
-	var link = sortedList[0];
+	var hello = getMatchedNodeList(index, nodeArr, linkArr);
 
-	console.log(linksToNode, sortedList, link)
-
-	finalArr.push(link);
-
-	if (link.indexOf(nodeArr[nodeNum-1])){
-
-		return finalArr;
+	if (hello.length === 0){
+		if (finalArr.length === 0){
+			return "no answer"
+		}
+		else{
+			getPreviousNode_Link(index, nodeArr, linkArr);
+		}
 	}
-	else {
+	else{
+		var sortedList = getSortedList(nodeArr, hello); // ["A-B", "A-C", "A-D"]
+		var link = sortedList[0];
+
 		var nextNode = link.slice(-1);
-		index = nodeArr.indexOf(nextNode);
-		console.log(finalArr)
-		return shortestPath(index, nodeArr, linkArr)
+
+		if ( link.indexOf(nodeArr[nodeArr.length - 1]) >= 0 ){
+			finalArr.push(link)
+		// console.log(hello, sortedList, link)
+			console.log(index)
+			return finalArr; 
+		}
+		else {
+			// var nextNode = link.slice(-1);
+			finalArr.push(link)
+			index = nodeArr.indexOf(nextNode);
+			linkArr.splice(linkArr.indexOf(link), 1) // remove lin in linkArr
+
+			console.log(nextNode, index) // B, 1
+			return shortestPath(index, nodeArr, linkArr)
+
+		}
+		
 
 	}
+	
+
+
 }
 
 
